@@ -5,5 +5,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("SnakeNet")
 
+include_directories("./GGPO")
+
 # Include sub-projects.
 add_subdirectory ("SnakeNet")
