@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(extern/GGPO)
 
-file(GLOB SNAKE_SRC "./src/*.h" "./src/*.cc")
-
+file(GLOB SNAKE_SRC "./src/*.h" "./src/*.cpp")
 
 include_directories(
 	./src/
