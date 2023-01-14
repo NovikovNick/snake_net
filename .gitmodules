@@ -1,0 +1,3 @@
+[submodule "extern/ggpo"]
+	path = extern/ggpo
+	url = git@github.com:NovikovNick/ggpo.git
