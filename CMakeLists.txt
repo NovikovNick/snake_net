@@ -18,4 +18,17 @@ add_definitions(-D_UNICODE -DUNICODE)
 add_executable(SnakeNet WIN32 ${SNAKE_SRC})
 target_link_libraries(SnakeNet LINK_PUBLIC winmm.lib ws2_32.lib)
 target_link_libraries(SnakeNet PRIVATE GGPO)
-#target_compile_options(SnakeNet PRIVATE "/W4" "/WX")
+
+add_custom_command(TARGET SnakeNet POST_BUILD
+
+	COMMAND  ${CMAKE_COMMAND} -E copy_if_different
+	         ${CMAKE_CURRENT_SOURCE_DIR}/extern/ggpo/build/bin/x64/${CMAKE_BUILD_TYPE}/GGPO.dll
+	         ${CMAKE_CURRENT_SOURCE_DIR}/out/build/x64-${CMAKE_BUILD_TYPE}
+)
+
+add_custom_command(TARGET SnakeNet POST_BUILD
+
+	COMMAND  ${CMAKE_COMMAND} -E copy_if_different
+	         ${CMAKE_CURRENT_SOURCE_DIR}/extern/ggpo/build/bin/x64/${CMAKE_BUILD_TYPE}/GGPO.pdb
+	         ${CMAKE_CURRENT_SOURCE_DIR}/out/build/x64-${CMAKE_BUILD_TYPE}
+)
