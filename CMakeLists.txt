@@ -3,6 +3,7 @@
 project ("SnakeNet")
 
 set(CMAKE_CXX_STANDARD 20)
+set(GGPO_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/ggpo/build/bin/x64/Release)
 
 add_subdirectory(extern/GGPO)
 
@@ -20,15 +21,9 @@ target_link_libraries(SnakeNet LINK_PUBLIC winmm.lib ws2_32.lib)
 target_link_libraries(SnakeNet PRIVATE GGPO)
 
 add_custom_command(TARGET SnakeNet POST_BUILD
-
-	COMMAND  ${CMAKE_COMMAND} -E copy_if_different
-	         ${CMAKE_CURRENT_SOURCE_DIR}/extern/ggpo/build/bin/x64/${CMAKE_BUILD_TYPE}/GGPO.dll
-	         ${CMAKE_CURRENT_SOURCE_DIR}/out/build/x64-${CMAKE_BUILD_TYPE}
+	COMMAND  ${CMAKE_COMMAND} -E copy_if_different ${GGPO_BINARY_DIR}/GGPO.dll ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 add_custom_command(TARGET SnakeNet POST_BUILD
-
-	COMMAND  ${CMAKE_COMMAND} -E copy_if_different
-	         ${CMAKE_CURRENT_SOURCE_DIR}/extern/ggpo/build/bin/x64/${CMAKE_BUILD_TYPE}/GGPO.pdb
-	         ${CMAKE_CURRENT_SOURCE_DIR}/out/build/x64-${CMAKE_BUILD_TYPE}
+	COMMAND  ${CMAKE_COMMAND} -E copy_if_different ${GGPO_BINARY_DIR}/GGPO.pdb ${CMAKE_CURRENT_BINARY_DIR}
 )
