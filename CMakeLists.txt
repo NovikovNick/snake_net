@@ -31,6 +31,9 @@ add_definitions(-D_UNICODE -DUNICODE)
 add_executable(grid_cell_unit_test "test/grid_cell.cc" ${SNAKE_SRC})
 target_include_directories(grid_cell_unit_test PRIVATE Boost::unit_test_framework)
 
+add_executable(game_state_unit_test "test/game_state.cc" ${SNAKE_SRC})
+target_include_directories(game_state_unit_test PRIVATE Boost::unit_test_framework)
+
 # bin
 add_executable(SnakeNet WIN32 ${VECTOR_WAR_SRC})
 target_link_libraries(SnakeNet LINK_PUBLIC winmm.lib ws2_32.lib)

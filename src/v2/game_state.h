@@ -4,6 +4,8 @@
 
 #include "grid_cell.h"
 
+#define DEBUG 1
+
 namespace snake {
 
 struct Player final {
@@ -14,16 +16,21 @@ struct Player final {
 };
 
 struct GameState final {
-  GridCell grid[400];
+
+  const static int n = 10;
+
+  GridCell grid[n * n];
   Player p1;
   Player p2;
   uint8_t status;
 
-  /*void Init(HWND hwnd, int num_players);
+  /*
   void GetShipAI(int i, double *heading, double *thrust, int *fire);
-  void ParseShipInputs(int inputs, int i, double *heading, double *thrust,
-                       int *fire);
-  void MoveShip(int i, double heading, double thrust, int fire);*/
+  void ParseShipInputs(int inputs, int i, double *heading, double *thrust, int
+  *fire); 
+  */
+  void MoveShip(int i);
+  void Init();
   void Update(int inputs[], int disconnect_flags);
 };
 

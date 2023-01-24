@@ -13,9 +13,11 @@
 #if CASE_1
 BOOST_AUTO_TEST_CASE(case1) {
   // arrange
-  snake::GridCell cell;
+  snake::GridCell cell = 1;
 
   // act && assert
+  BOOST_CHECK(cell.isEmpty());
+
   cell.setEmpty(true);
   BOOST_CHECK(cell.isEmpty());
 
@@ -35,6 +37,12 @@ BOOST_AUTO_TEST_CASE(case2) {
   // act && assert
 
   std::cout << std::bitset<8>(cell.data) << std::endl;
+
+  cell.setPlayer(0, snake::Direction::LEFT, snake::Direction::LEFT);
+  std::cout << std::bitset<8>(cell.data) << std::endl;
+  BOOST_CHECK_EQUAL(0, cell.getPlayerId());
+  BOOST_CHECK(snake::Direction::LEFT == cell.getDir());
+  BOOST_CHECK(snake::Direction::LEFT == cell.getPrev());
 
   cell.setPlayer(1, snake::Direction::UP, snake::Direction::UP);
   std::cout << std::bitset<8>(cell.data) << std::endl;

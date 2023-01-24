@@ -14,6 +14,7 @@ struct GridCell final {
 
   bool isEmpty() const;
   bool isPlayer() const;
+  bool isPlayer(const uint8_t id) const;
   bool isApple() const;
   bool isNextApple() const;
   Direction getPrev() const;
