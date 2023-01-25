@@ -19,7 +19,7 @@ namespace snake {
 
 GridCell::GridCell(const int data) : data(data){};
 
-GridCell::GridCell() : GridCell(0){};
+GridCell::GridCell() : GridCell(0) { setEmpty(true); };
 
 bool GridCell::isEmpty() const { return data & empty_b; }
 

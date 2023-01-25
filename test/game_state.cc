@@ -81,6 +81,7 @@ BOOST_AUTO_TEST_CASE(case2) {
   // arrange
   snake::GameState gs;
   gs.Init();
+
   // act
   gs.Update(new int[]{static_cast<int>(snake::Direction::BOTTOM), -1}, 0);
   gs.MoveShip(0);

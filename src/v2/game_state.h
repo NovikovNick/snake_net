@@ -16,12 +16,11 @@ struct Player final {
 };
 
 struct GameState final {
-
   const static int n = 10;
+  const static int player_count = 2;
 
   GridCell grid[n * n];
-  Player p1;
-  Player p2;
+  Player player[player_count];
   uint8_t status;
 
   /*
@@ -29,7 +28,7 @@ struct GameState final {
   void ParseShipInputs(int inputs, int i, double *heading, double *thrust, int
   *fire); 
   */
-  void MoveShip(int i);
+  void MoveShip(const int i);
   void Init();
   void Update(int inputs[], int disconnect_flags);
 };

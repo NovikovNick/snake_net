@@ -54,30 +54,31 @@ std::pair<int, int> getTail(snake::GridCell grid[], const int player_id,
 
 namespace snake {
 
-void GameState::MoveShip(int player_id) {
-  auto& player = player_id == 0 ? p1 : p2;
-  const auto head = getGridCell(grid, player.x, player.y);
+void GameState::MoveShip(const int player_id) {
+  auto head_x = player[player_id].x;
+  auto head_y = player[player_id].y;
+  const auto head = getGridCell(grid, head_x, head_y);
 
-  auto [next_head_x, next_head_y] = move(player.x, player.y, head.getDir());
+  auto [next_head_x, next_head_y] = move(head_x, head_y, head.getDir());
   auto& next_head = getGridCell(grid, next_head_x, next_head_y);
   next_head.setPlayer(player_id, head.getDir(), apposite(head.getDir()));
-  
+
   if (next_head.isApple()) {
     next_head.setPrevApple();
   } else {
-    auto [tail_x, tail_y] = getTail(grid, player_id, player.x, player.y);
+    auto [tail_x, tail_y] = getTail(grid, player_id, head_x, head_y);
     getGridCell(grid, tail_x, tail_y).setEmpty(true);
   }
 
-  player.x = next_head_x;
-  player.y = next_head_y;
+  player[player_id].x = next_head_x;
+  player[player_id].y = next_head_y;
 }
 
 void GameState::Init() {
-  memset(grid, 1, sizeof(grid));
+  memset(grid, GridCell{}.data, sizeof(grid));
 
-  p1 = Player(4, 1, 0);
-  p2 = Player(4, 9, 0);
+  player[0] = Player(4, 1, 0);
+  player[1] = Player(4, 9, 0);
   for (int i = 1; i <= 4; ++i) {
     getGridCell(grid, i, 1).setPlayer(0, Direction::RIGHT, Direction::LEFT);
     getGridCell(grid, i, 9).setPlayer(1, Direction::RIGHT, Direction::LEFT);
@@ -87,15 +88,12 @@ void GameState::Init() {
 }
 
 void GameState::Update(int inputs[], int disconnect_flags) {
-  if (inputs[0] != -1) {
-    auto& head = getGridCell(grid, p1.x, p1.y);
-    head.setPlayer(0, static_cast<Direction>(inputs[0]), head.getPrev());
-  }
-
-  if (inputs[1] != -1) {
-    auto& head = getGridCell(grid, p2.x, p2.y);
-    head.setPlayer(1, static_cast<Direction>(inputs[1]), head.getPrev());
+  for (int player_id = 0; player_id <= GameState::player_count; ++player_id) {
+    if (inputs[player_id] != -1) {
+      auto& head = getGridCell(grid, player[player_id].x, player[player_id].y);
+      auto dir = static_cast<Direction>(inputs[player_id]);
+      head.setPlayer(player_id, dir, head.getPrev());
+    }
   }
 }
-
 }  // namespace snake
