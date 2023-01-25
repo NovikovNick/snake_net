@@ -94,6 +94,23 @@ BOOST_AUTO_TEST_CASE(case2) {
 }
 #endif  // !CASE_2
 
+#if CASE_3
+BOOST_AUTO_TEST_CASE(case3) {
+  // arrange
+  snake::GameState gs;
+  gs.Init();
+  // act
+  gs.Update(new int[]{static_cast<int>(snake::Direction::UP), -1}, 0);
+  gs.MoveShip(0);
+
+  // assert
+  print(gs);
+  assertGrid(gs, 
+      {{2, 1}, {3, 1}, {4, 1}, {4, 0}},
+      {{1, 9}, {2, 9}, {3, 9}, {4, 9}}, 
+      {8, 8});
+}
+#endif  // !CASE_3
 
 #if CASE_4
 BOOST_AUTO_TEST_CASE(case4) {

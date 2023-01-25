@@ -38,40 +38,39 @@ snake::Direction apposite(snake::Direction dir) {
   }
 }
 
+std::pair<int, int> getTail(snake::GridCell grid[], const int player_id,
+                            const int head_x, const int head_y) {
+  std::pair<int, int> tail_coord, curr_coord = {head_x, head_y};
+  snake::GridCell curr = getGridCell(grid, head_x, head_y);
+  while (curr.isPlayer(player_id)) {
+    tail_coord = curr_coord;
+    curr_coord = move(curr_coord.first, curr_coord.second, curr.getPrev());
+    curr = getGridCell(grid, curr_coord.first, curr_coord.second);
+  }
+  return tail_coord;
+}
+
 }  // namespace
 
 namespace snake {
 
-void GameState::MoveShip(int i) {
-  auto& player = i == 0 ? p1 : p2;
-  auto& head = getGridCell(grid, player.x, player.y);
-  auto head_dir = head.getDir();
-  auto apposite_head_dir = apposite(head.getDir());
+void GameState::MoveShip(int player_id) {
+  auto& player = player_id == 0 ? p1 : p2;
+  const auto head = getGridCell(grid, player.x, player.y);
 
-  auto [x, y] = move(player.x, player.y, head_dir);
-  auto isHeadEmpty = head.isEmpty();
-  auto& next_head = getGridCell(grid, x, y);
-  next_head.setPlayer(i, head_dir, apposite_head_dir);
-
-  auto [tail_x, tail_y] = move(player.x, player.y, head.getPrev());
-  auto prev_x = tail_x;
-  auto prev_y = tail_y;
-  while (getGridCell(grid, tail_x, tail_y).isPlayer(i)) {
-    prev_x = tail_x;
-    prev_y = tail_y;
-    auto prev_dir = getGridCell(grid, tail_x, tail_y).getPrev();
-    auto coord = move(tail_x, tail_y, prev_dir);
-    tail_x = coord.first;
-    tail_y = coord.second;
-  }
+  auto [next_head_x, next_head_y] = move(player.x, player.y, head.getDir());
+  auto& next_head = getGridCell(grid, next_head_x, next_head_y);
+  next_head.setPlayer(player_id, head.getDir(), apposite(head.getDir()));
+  
   if (next_head.isApple()) {
     next_head.setPrevApple();
   } else {
-    getGridCell(grid, prev_x, prev_y).setEmpty(true);
+    auto [tail_x, tail_y] = getTail(grid, player_id, player.x, player.y);
+    getGridCell(grid, tail_x, tail_y).setEmpty(true);
   }
 
-  player.x = x;
-  player.y = y;
+  player.x = next_head_x;
+  player.y = next_head_y;
 }
 
 void GameState::Init() {
