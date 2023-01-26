@@ -56,6 +56,7 @@ std::pair<int, int> getTail(snake::GridCell grid[], const int player_id,
 namespace snake {
 
 void GameState::MoveShip(const int player_id) {
+  _framenumber++;
   auto head_x = player[player_id].x;
   auto head_y = player[player_id].y;
   const auto head = getGridCell(grid, head_x, head_y);
@@ -76,6 +77,7 @@ void GameState::MoveShip(const int player_id) {
 }
 
 void GameState::Init() {
+  _framenumber = 0;
   memset(grid, GridCell{}.data, sizeof(grid));
 
   player[0] = Player(4, 1, 0);

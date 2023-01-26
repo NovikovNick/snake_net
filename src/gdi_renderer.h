@@ -15,13 +15,11 @@ public:
    GDIRenderer(HWND hwnd);
    ~GDIRenderer();
 
-   virtual void Draw(GameState &gs, NonGameState &ngs);
+   virtual void Draw(snake::GameState &gs, NonGameState &ngs);
    virtual void SetStatusText(const char *text);
 
 protected:
    void RenderChecksum(HDC hdc, int y, NonGameState::ChecksumInfo &info);
-   void DrawShip(HDC hdc, int which, GameState &gamestate);
-   void DrawConnectState(HDC hdc, Ship &ship, PlayerConnectionInfo &info);
    void CreateGDIFont(HDC hdc);
 
    HFONT          _font;

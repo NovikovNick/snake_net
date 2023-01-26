@@ -10,7 +10,7 @@
 //#define SYNC_TEST    // test: turn on synctest
 #define MAX_PLAYERS     64
 
-GameState gs = { 0 };
+snake::GameState gs = { 0 };
 NonGameState ngs = { 0 };
 Renderer *renderer = NULL;
 GGPOSession *ggpo = NULL;
@@ -108,12 +108,14 @@ vw_on_event_callback(GGPOEvent *info)
 bool __cdecl
 vw_advance_frame_callback(int)
 {
-   int inputs[MAX_SHIPS] = { 0 };
+   int inputs[snake::GameState::player_count] = { 0 };
    int disconnect_flags;
 
    // Make sure we fetch new inputs from GGPO and use those to update
    // the game state instead of reading from the keyboard.
-   ggpo_synchronize_input(ggpo, (void *)inputs, sizeof(int) * MAX_SHIPS, &disconnect_flags);
+   ggpo_synchronize_input(ggpo, (void *)inputs,
+                          sizeof(int) * snake::GameState::player_count,
+                          &disconnect_flags);
    VectorWar_AdvanceFrame(inputs, disconnect_flags);
    return true;
 }
@@ -157,7 +159,7 @@ vw_save_game_state_callback(unsigned char **buffer, int *len, int *checksum, int
 bool __cdecl
 vw_log_game_state(char *filename, unsigned char *buffer, int)
 {
-   FILE* fp = nullptr;
+  /* FILE* fp = nullptr;
    fopen_s(&fp, filename, "w");
    if (fp) {
       GameState *gamestate = (GameState *)buffer;
@@ -184,7 +186,7 @@ vw_log_game_state(char *filename, unsigned char *buffer, int)
       }
       fclose(fp);
    }
-   return true;
+   */return true;
 }
 
 /*
@@ -212,7 +214,7 @@ VectorWar_Init(HWND hwnd, unsigned short localport, int num_players, GGPOPlayer 
    renderer = new GDIRenderer(hwnd);
 
    // Initialize the game state
-   gs.Init(hwnd, num_players);
+   gs.Init();
    ngs.num_players = num_players;
 
    // Fill in a ggpo callbacks structure to pass to start_session.
@@ -269,7 +271,7 @@ VectorWar_InitSpectator(HWND hwnd, unsigned short localport, int num_players, ch
    renderer = new GDIRenderer(hwnd);
 
    // Initialize the game state
-   gs.Init(hwnd, num_players);
+   gs.Init();
    ngs.num_players = num_players;
 
    // Fill in a ggpo callbacks structure to pass to start_session.
@@ -331,9 +333,11 @@ VectorWar_DrawCurrentFrame()
  * Advances the game state by exactly 1 frame using the inputs specified
  * for player 1 and player 2.
  */
-void VectorWar_AdvanceFrame(int inputs[], int disconnect_flags)
-{
-   gs.Update(inputs, disconnect_flags);
+void VectorWar_AdvanceFrame(int inputs[], int disconnect_flags) {
+   
+    gs.Update(inputs, disconnect_flags);
+    gs.MoveShip(0);
+    gs.MoveShip(1);
 
    // update the checksums to display in the top of the window.  this
    // helps to detect desyncs.
@@ -372,12 +376,10 @@ ReadInputs(HWND hwnd)
       int      key;
       int      input;
    } inputtable[] = {
-      { VK_UP,       INPUT_THRUST },
-      { VK_DOWN,     INPUT_BREAK },
-      { VK_LEFT,     INPUT_ROTATE_LEFT },
-      { VK_RIGHT,    INPUT_ROTATE_RIGHT },
-      { 'D',         INPUT_FIRE },
-      { 'S',         INPUT_BOMB },
+      { VK_UP,       static_cast<int>(snake::Direction::UP)},
+      { VK_DOWN,     static_cast<int>(snake::Direction::BOTTOM)},
+      { VK_LEFT,     static_cast<int>(snake::Direction::LEFT)},
+      { VK_RIGHT,    static_cast<int>(snake::Direction::RIGHT)}
    };
    int i, inputs = 0;
 
@@ -402,7 +404,7 @@ VectorWar_RunFrame(HWND hwnd)
 {
   GGPOErrorCode result = GGPO_OK;
   int disconnect_flags;
-  int inputs[MAX_SHIPS] = { 0 };
+  int inputs[snake::GameState::player_count] = { 0 };
 
   if (ngs.local_player_handle != GGPO_INVALID_HANDLE) {
      int input = ReadInputs(hwnd);
@@ -416,7 +418,9 @@ VectorWar_RunFrame(HWND hwnd)
    // ggpo will modify the input list with the correct inputs to use and
    // return 1.
   if (GGPO_SUCCEEDED(result)) {
-     result = ggpo_synchronize_input(ggpo, (void *)inputs, sizeof(int) * MAX_SHIPS, &disconnect_flags);
+     result = ggpo_synchronize_input(
+         ggpo, (void *)inputs, sizeof(int) * snake::GameState::player_count,
+         &disconnect_flags);
      if (GGPO_SUCCEEDED(result)) {
          // inputs[0] and inputs[1] contain the inputs for p1 and p2.  Advance
          // the game by 1 frame using those inputs.

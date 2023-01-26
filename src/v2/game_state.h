@@ -22,13 +22,9 @@ struct GameState final {
   GridCell grid[n * n];
   Player player[player_count];
   uint8_t status;
+  int _framenumber;
 
-  /*
-  void GetShipAI(int i, double *heading, double *thrust, int *fire);
-  void ParseShipInputs(int inputs, int i, double *heading, double *thrust, int
-  *fire); 
-  */
-  void MoveShip(const int i);
+  void MoveShip(const int player_id);
   void Init();
   void Update(int inputs[], int disconnect_flags);
 };
