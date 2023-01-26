@@ -9,15 +9,16 @@ snake::GridCell& getGridCell(snake::GridCell grid[], const int x, const int y) {
 };
 
 std::pair<int, int> move(const int x, const int y, snake::Direction dir) {
+  const int n = snake::GameState::n;
   switch (dir) {
     case snake::Direction::UP:
-      return {x, y - 1};
+      return (y - 1 < 0) ? std::make_pair(x, n - 1) : std::make_pair(x, y - 1);
     case snake::Direction::BOTTOM:
-      return {x, y + 1};
+      return (y + 1 >= n) ? std::make_pair(x, 0) : std::make_pair(x, y + 1);
     case snake::Direction::LEFT:
-      return {x - 1, y};
+      return (x - 1 < 0) ? std::make_pair(n - 1, y) : std::make_pair(x - 1, y);
     case snake::Direction::RIGHT:
-      return {x + 1, y};
+      return (x + 1 >= n) ? std::make_pair(0, y) : std::make_pair(x + 1, y);
     default:
       throw std::invalid_argument("no such direction");
   }
