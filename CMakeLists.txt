@@ -35,7 +35,7 @@ add_executable(game_state_unit_test "test/game_state.cc" ${SNAKE_SRC})
 target_include_directories(game_state_unit_test PRIVATE Boost::unit_test_framework)
 
 # bin
-add_executable(SnakeNet WIN32 ${VECTOR_WAR_SRC})
+add_executable(SnakeNet WIN32 ${VECTOR_WAR_SRC} ${SNAKE_SRC})
 target_link_libraries(SnakeNet LINK_PUBLIC winmm.lib ws2_32.lib)
 target_link_libraries(SnakeNet PRIVATE GGPO)
 

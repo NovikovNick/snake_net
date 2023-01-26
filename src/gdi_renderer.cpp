@@ -3,6 +3,7 @@
 #include <math.h>
 #include "vectorwar.h"
 #include "gdi_renderer.h"
+#include "./v2/game_state.h"
 
 #define  PROGRESS_BAR_WIDTH        100
 #define  PROGRESS_BAR_TOP_OFFSET    22
@@ -43,15 +44,40 @@ GDIRenderer::Draw(GameState &gs, NonGameState &ngs)
    HDC hdc = GetDC(_hwnd);
 
    FillRect(hdc, &_rc, (HBRUSH)GetStockObject(BLACK_BRUSH));
-   FrameRect(hdc, &gs._bounds, (HBRUSH)GetStockObject(WHITE_BRUSH));
+
+   snake::GameState gs2;
+   gs2.Init();
+   RECT rect{0, 0, 0, 0};
+   int size = 40;
+   int padding = 60;
+
+   for (int i = 0; i < snake::GameState::n * snake::GameState::n; ++i) {
+     int row = i / snake::GameState::n;
+     int col = i % snake::GameState::n;
+     auto cell = gs2.grid[row * snake::GameState::n + col];
+
+     rect.left = padding + size * col;
+     rect.top = padding + size * row;
+     rect.right = padding + size * (col + 1);
+     rect.bottom = padding + size * (row + 1);
+
+     if (cell.isPlayer(0))
+       FillRect(hdc, &rect, (HBRUSH)GetStockObject(LTGRAY_BRUSH));
+
+     if (cell.isPlayer(1))
+       FillRect(hdc, &rect, (HBRUSH)GetStockObject(GRAY_BRUSH));
+     
+     if (cell.isApple())
+       FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+
+     if (cell.isEmpty())
+       FrameRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+   }
 
    SetBkMode(hdc, TRANSPARENT);
    SelectObject(hdc, _font);
 
-   for (int i = 0; i < gs._num_ships; i++) {
-      SetTextColor(hdc, _shipColors[i]);
-      SelectObject(hdc, _shipPens[i]);
-      DrawShip(hdc, i, gs);
+   for (int i = 0; i < snake::GameState::player_count; i++) {
       DrawConnectState(hdc, gs._ships[i], ngs.players[i]);
    }
 
