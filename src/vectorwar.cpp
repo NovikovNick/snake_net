@@ -6,6 +6,7 @@
 #include "gdi_renderer.h"
 #include "vectorwar.h"
 #include "ggpo_perfmon.h"
+#include <chrono>
 
 //#define SYNC_TEST    // test: turn on synctest
 #define MAX_PLAYERS     64
@@ -327,7 +328,11 @@ VectorWar_DrawCurrentFrame()
    }
 }
 
-/*
+using frame = std::chrono::duration<uint64_t, std::ratio<1, 60>>;
+int frame_sq = 0, player1_velocity = 40, player2_velocity = 40;
+auto t0 = std::chrono::high_resolution_clock::now();
+
+    /*
  * VectorWar_AdvanceFrame --
  *
  * Advances the game state by exactly 1 frame using the inputs specified
@@ -335,9 +340,16 @@ VectorWar_DrawCurrentFrame()
  */
 void VectorWar_AdvanceFrame(int inputs[], int disconnect_flags) {
    
+    using namespace std::chrono;
+
     gs.Update(inputs, disconnect_flags);
-    gs.MoveShip(0);
-    gs.MoveShip(1);
+    auto new_frame_sq = duration_cast<frame>(high_resolution_clock::now() - t0)
+            .count();
+    if (frame_sq != new_frame_sq) {
+        frame_sq = new_frame_sq;
+        if (frame_sq % player1_velocity == 0) gs.MoveShip(0);
+        if (frame_sq % player2_velocity == 0) gs.MoveShip(1);
+    }
 
    // update the checksums to display in the top of the window.  this
    // helps to detect desyncs.
@@ -381,12 +393,12 @@ ReadInputs(HWND hwnd)
       { VK_LEFT,     static_cast<int>(snake::Direction::LEFT)},
       { VK_RIGHT,    static_cast<int>(snake::Direction::RIGHT)}
    };
-   int i, inputs = 0;
+   int i, inputs = -1;
 
    if (GetForegroundWindow() == hwnd) {
       for (i = 0; i < sizeof(inputtable) / sizeof(inputtable[0]); i++) {
          if (GetAsyncKeyState(inputtable[i].key)) {
-            inputs |= inputtable[i].input;
+            inputs = inputtable[i].input;
          }
       }
    }
